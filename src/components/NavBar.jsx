@@ -69,7 +69,7 @@ const NavBar = () => {
                 <a href='./'>Accueil</a>
                 <a href='/pizzas'>Pizzas</a>
                 <a href='/reservation'>Réservation</a>
-                {/* <a href='/planningV2'>planningV2</a> */}
+                <a href='/planningV2'>planningV2</a>
                 {user ? (
                     <> 
                         <a href="/profile">{user.username}</a>

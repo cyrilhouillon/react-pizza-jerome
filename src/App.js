@@ -15,7 +15,7 @@ import { getToken } from "./components/helpers";
 import { getPizzas } from "./components/helpers";
 import SelectedPizza  from './components/SelectedPizza/SelectedPizza';
 import Planning  from './components/planning/Planning';
-// import PlanningV2  from './components/planning/PlanningV2';
+import PlanningV2  from './components/planning/PlanningV2';
 import Dsp_Planning  from './components/Display_planning';
 import Accueil from './components/accueil/Accueil';
 import ForgotPassword from './components/auth/ForgotPassword';
@@ -32,7 +32,7 @@ function App() {
 
             <Routes>
                 <Route path="/reservation" element={<Dsp_Planning />} />
-                {/* <Route path="/planningV2" element={<PlanningV2 />} /> */}
+                <Route path="/planningV2" element={<PlanningV2 />} />
                 <Route
                  path="/planning"
                 // element={<Planning />}

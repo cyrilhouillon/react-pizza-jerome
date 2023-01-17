@@ -49,3 +49,25 @@ export const DefaultPlanningv2 = [
     {"horaire" : "21h40 - 21h50", "reservation" : []},
     {"horaire" : "21h50 - 22h00", "reservation" : []}
 ];
+
+export const timeIncrements = [];
+
+let index = 1;
+
+for (let i = 0; i < 4; i++) {
+  for (let j = 0; j < 6; j++) {
+    const start = `${18 + i}:${j * 10}`.padEnd(5, "0");
+    let end = null;
+    if (j < 5) {
+      end = `${18 + i}:${(j + 1) * 10}`.padEnd(5, "0");
+    } else {
+      end = `${19 + i}:00`.padStart(5, "0");
+    }
+    timeIncrements.push({
+      "creneau": `${start} - ${end}`,
+      "dispo": 6
+  });
+    index++;
+  }
+}
+

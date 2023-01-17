@@ -108,6 +108,13 @@
     justify-content: center;
     align-items: center;
 }
+span{
+    cursor: pointer;
+    padding: 2%;
+}
+span:hover{
+    background-color: #ccc;
+}
 
 /* popup  */
 .popup_false{

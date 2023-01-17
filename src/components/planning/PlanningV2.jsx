@@ -1,170 +1,169 @@
 import React from "react";
 import axios from 'axios';
 import { API } from "../constant";
-import { DefaultPlanning, DefaultPlanningv2 } from "./DefaultPlanning";
 import { useState, useEffect} from 'react';
 import "./Planning.css"
+import { useNavigate } from "react-router-dom";
+import { timeIncrements } from "./DefaultPlanning";
+// import { DefaultPlanning } from "./DefaultPlanning";
 
-const PlanningV2 = () => {
+const  Planningv2 = () => {
 	
-
+	const navigate = useNavigate();	
+	let retrievedObject = localStorage.getItem('pizzas');
+	const [pizzas, setPizzas] = useState(JSON.parse(retrievedObject));
+	const [pizzas_name, setPizzasname] = useState([]);
+	const [pizzas_note, setPizzasnote] = useState([]);
     const [date, setDate] = useState(get_date_formated_today());
-	const [nbrpizza, setNbrPizza] = useState(0)
-
-	function get_nbr_Pizza(){
-		const date_of_day = new Date(date);
-    	const dayOfWeek = date_of_day.getDay();
-		console.log(dayOfWeek)
-		// vendredi == 5 | samedi == 6 | dimanche == 7
-		if (dayOfWeek == 5 || dayOfWeek == 6 || dayOfWeek == 0){
-			setNbrPizza(7)
-		}
-		else{
-			setNbrPizza(6)
-		}
+	const [prep_time, setPrep_time] = useState("");
+	const [modalisOpen, setmodalisOpen] = useState(false);
+	const [modalisOpenFalse, setmodalisOpenFalse] = useState(false);
+	const [debut, setDebut] = useState("");
+	const [fin, setFin] = useState("");
+	const [lst_pizza_object, setLst_pizza_object] = useState({});
+	
+	const navigateValidate = () => {
+		navigate('/reservation');
 	}
 
-
-	// reformat date to dd/mm/yyyy
 	function get_date_formated_today(){
 		let today = new Date();
 		let dd = String(today.getDate()).padStart(2, '0');
-		let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+		let mm = String(today.getMonth() + 1).padStart(2, '0');
 		let yyyy = today.getFullYear();
 		today = yyyy + '-' + mm + '-' + dd;
 		return today;
 	}
-    
-	const [crenaux, setCreneaux] = useState(DefaultPlanning)
-	const [crenaux1, setCreneaux1] = useState(DefaultPlanning)
-	const [lst_pizzas_reserved, set_lst_pizzas_reserved] = useState([])
-
+     
+	const [data, setData] = useState([]);
+	const [prix_total, set_prix_total] = useState(0)
 	useEffect(()=>{
         const loadReserved = async (date) => {
             const response = await axios.get(`${API}/reservations?filters[debut_resa][$containsi]=${date}`);
-			structured_planning_with_pizzas_reserved(response.data.data)
-			get_nbr_Pizza()
-			setCount(0)
+			setData(response.data.data);
+			update_dispo(response.data.data)
         }
         loadReserved(date);
     }
     ,[date]);
-
-	function convertToDate(timeString) {
-		// Split the time string into hour and minute
-		const [hour, minute, seconds] = timeString.split(':');
-	  
-		// Create a new Date object
-		const date = new Date();
-	  
-		// Set the hour and minute on the Date object
-		date.setHours(hour);
-		date.setMinutes(minute);
-		date.setSeconds(seconds);
-		return date;
-	  }
-
-	function calculateDateDifference(startDate, endDate) {
-		// Get the difference between the two dates in milliseconds
-		const difference = endDate - startDate;
-		
-		// Calculate the number of hours, minutes, and seconds
-		const hours = Math.floor(difference / (1000 * 60 * 60));
-		const minutes = Math.floor((difference / (1000 * 60)) % 60);
-		const seconds = Math.floor((difference / 1000) % 60);
-		
-		// Return the result as an object
-		return { minutes, seconds };
-	  }
-
-	
-	function divideTime(minutes, seconds, divisorMinutes, divisorSeconds) {
-		// Convert the minutes and seconds to total seconds
-		const totalSeconds = minutes * 60 + seconds;
-	
-		// Convert the divisor minutes and seconds to total seconds
-		const divisorTotalSeconds = divisorMinutes * 60 + divisorSeconds;
-	
-		// Divide the total seconds by the divisor total seconds
-		const result = totalSeconds / divisorTotalSeconds;
-	
-		// Return the result
-		return result;
-	}
-
-	const [count, setCount] = useState()
-    function structured_planning_with_pizzas_reserved(data_reservation){
-		if(data_reservation.length < 1){
-			crenaux.map((crenau, i) => {
-				crenau.reservation = []
-				crenau.nbr_pizza_per_crenau = 0
-				set_lst_pizzas_reserved([])
-				
-			})
-
-		}
-        crenaux.map((crenau, i) => {
-			let tmp_nbr_pizza = 0
-			data_reservation.map((resa) => {
-				let debut_crenau = crenau.horaire.split("-")[0].replace("h", ":") + ":00"
-				const date_debut_crenau = convertToDate(debut_crenau)
-				let fin_crenau = crenau.horaire.split("-")[1].replace("h", ":") + ":00"
-				const date_fin_crenau = convertToDate(fin_crenau)
-
-				
-				let debut_resa = resa.attributes.debut_resa.split("T")[1].split(".")[0].replace(" ", "");
-				const date_debut_resa = convertToDate(debut_resa)
-				let fin_resa = resa.attributes.fin_resa.split("T")[1].split(".")[0].replace(" ", "");
-				// console.log(fin_resa)
-				const date_fin_resa = convertToDate(fin_resa)
-				const max_date_fin_crenau = convertToDate("22:00:00")
-				// console.log(date_fin_resa)
-				// console.log(max_date_fin_crenau)
-				if(date_debut_crenau.getHours() === date_debut_resa.getHours() && date_debut_resa.getMinutes() >= date_debut_crenau.getMinutes() && date_fin_resa <= date_fin_crenau){
-					// if(crenau.reservation)
-					if(!lst_pizzas_reserved.includes(resa.id)){
-
-					let res = calculateDateDifference(date_debut_resa, date_fin_resa)
-					resa.tmp_estimate = res.minutes+"m"+res.seconds+"s"
-					res = divideTime(res.minutes, res.seconds, 1, 40)
-					resa.nbrPizza = res
-					tmp_nbr_pizza += res
-					lst_pizzas_reserved.push(resa.id)
-					crenau.reservation.push(resa)
-					crenau.nbr_pizza_per_crenau = tmp_nbr_pizza					
-					}
-
-				}	
-
-				// else if(date_debut_crenau.getHours() === date_debut_resa.getHours() && date_debut_crenau.getMinutes() <= date_debut_resa.getMinutes() && date_fin_resa <= max_date_fin_crenau && date_fin_resa.getHours() >= date_fin_crenau.getHours() || date_fin_resa.getMinutes() >= date_fin_crenau.getMinutes()){
-				// // 	if(!lst_pizzas_reserved.includes(resa.id)){
-				// // 	console.log("else if")
-				// // 	console.log(resa.id)
-				// // 	let res = calculateDateDifference(date_debut_resa, date_fin_resa)
-				// // 	resa.tmp_estimate = res.minutes+"m"+res.seconds+"s"
-				// // 	res = divideTime(res.minutes, res.seconds, 1, 40)
-				// // 	resa.nbrPizza = res
-				// // 	tmp_nbr_pizza += res
-				// // 	lst_pizzas_reserved.push(resa.id)
-				// // 	crenau.reservation.push(resa)
-				// // 	crenau.nbr_pizza_per_crenau = tmp_nbr_pizza	
-				// // }
-
-				// }
-			})
-		})
-
-		setCreneaux([...crenaux])
-		console.log(crenaux)
-		// setCount())
-
-
-    }
 	
 	const setDateQuery = (e) => {
 		console.log(e)
 		setDate(e);
 	}
+
+	function update_dispo(data_reserver){
+		console.log(data_reserver)
+		console.log(timeIncrements)
+	}
+
+	function checkdispo(creneau_reserved){
+		console.log(timeIncrements[creneau_reserved].dispo)
+		console.log("nombre de pizza a caller")
+		console.log("Réservation", pizzas)
+
+	}
+
+
+	const [crenaux_disponible, setCrenaux_disponible] = useState(0);
+    const onClickHandlerReservation = (creneau_reserved) => {
+		// console.log(timeIncrements[creneau_reserved])
+		// console.log("New planning", timeIncrements)
+		// console.log("Réservation", pizzas)
+
+		// calcul debut de la reservation en prenant le debut de l'heure clicker
+		// pour incrementer sur tout les possibilité du creneaux
+		// check if have a dispo if not check if you can decale de 3 après toute les autres sinon mesage impossible même decaller 
+		console.log(data)
+		checkdispo(creneau_reserved)
+
+	// Get all resa check dispo
+	// 3 MSG
+		// plannifier de -- a --
+			
+		// êtes vous sur de plannifier de -- a -- cette commande va prendre du retard sur les reservation de tel heure tel heure et ....
+		
+		// imposible de planifier même en prenant du retard veuillez choisir un autre crenaux		
+    
+	
+	}
+
+	const [client, setclient] = useState('');
+	const handleChangeGetClientName = event => {
+		setclient(event.target.value);	
+	  };
+
+	const [info_Supp, setInfo_supp] = useState('');
+	const handleChangeInfoSupp = event => {
+		setInfo_supp(event.target.value);
+	};
+
+	const [dateAvance, setDateAvance] = useState("18:00");
+	const onChangesetDateAvance = (date) => {
+		setDateAvance(date);
+	}
+
+	const [dateAvance2, setDateAvance2] = useState(3);
+	const setAvance = (avance) => {
+		setDateAvance2(avance);
+	}
+
+	function updateById(datas, id){
+		axios({
+			method: 'put',
+			url: `${API}/reservations/${id}`,
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8',
+			},
+			data : datas
+		})
+		.then(function (response) {
+			console.log(response);
+		})
+		.catch(function (error) {
+			console.log(error);
+		});
+	}
+
+	const clickHandlerConfirmed_Resa = () => {
+		if (client == ''){
+			alert("Veuillez renseigner votre nom");
+		}
+		else{
+		console.log(date + debut)
+		let date_debut = date + "T" + debut + ".000Z";
+		let date_fin = date + "T" + fin + ".000Z";
+		console.log(lst_pizza_object);
+		const datas = {
+			"data":
+			{
+				"debut_resa":date_debut,
+				"fin_resa":date_fin,
+				"pizzas_reserved":lst_pizza_object,
+				"client":client,
+				"informations":info_Supp,
+				"prix_total":prix_total,
+			}}
+		axios({
+			method: 'post',
+			url: `${API}/reservations`,
+			headers: {
+				'Content-Type': 'application/json; charset=utf-8',
+			},
+			data : datas,
+		})
+			.then(response => {
+				console.log(response);
+				// vider pizzas du local storage
+				localStorage.removeItem('pizzas');
+				// navigate to display planning
+				navigate("/reservation");
+			})	
+			.catch(error => {
+				// Handle error.
+				console.log("An error occurred:", error.response);
+			});
+		}}
 
 	return (
 		// display pizzas in card
@@ -172,6 +171,7 @@ const PlanningV2 = () => {
 			<div className="planning__containers">
 				<div className="planning__container__title">
 					<h1>Planning</h1>
+					<p>Le temps de préparation est de {prep_time}</p>
 					{/* <span>avancer toutes les commandes de </span>
 					<span>reculer toutes les commandes de </span> */}
 					<input 
@@ -180,33 +180,77 @@ const PlanningV2 = () => {
 						value={date}
           				onChange={(e) => setDateQuery(e.target.value)}
           			/>
-					
+					{modalisOpen && (
+       					<div className="popup">
+							<div className="popup_container">		
+        						<div className="popup_content">
+          							{/* display le debut la fin avec un format sympa + les pizza et leur quantité */}
+									<h5>Récapitulaitf de la commande : </h5>
+									{pizzas.map((pizza, index) => (
+										<p key={index}>{pizza.quantity} {pizza.name}</p>
+									))}
+									<p>Le temps de préparation est de {prep_time}</p>
+									{/* SET LE DEBUT IT'S OKAY MAINTENANT SET LA FIN */}
+									<p>Reservation du {date} de {debut} à {fin} pour  pizzas</p>
+									<div className="popup_input">
+										<label 
+									    style={{  borderRadius: "5px", outline: "none", fontSize: "16px", color: "#333", fontWeight: "300", letterSpacing: "1px",  textAlign: "center", padding: "10px 20px", display: "inline-block", margin: "10px 10px 10px 0" }}
+										htmlFor="">Informations supplementaires optionnel</label>
+
+										<input
+										style={{marginBottom: "10px", padding: "20px", width: "100%", borderRadius: "5px", border: "1px solid #ccc", outline: "none", fontSize: "10px", color: "#333", fontWeight: "300", letterSpacing: "1px", textTransform: "uppercase", textAlign: "center", transition: "all 0.3s ease-in-out", boxShadow: "0 0 10px rgba(0,0,0,0.1)", backgroundColor: "#fff"}}
+										type="text"
+										placeholder="informations relatives à la commande" 
+										onChange={handleChangeInfoSupp}/>
+
+										<label style={{  borderRadius: "5px", outline: "none", fontSize: "16px", color: "#333", fontWeight: "300", letterSpacing: "1px",  textAlign: "center", padding: "10px 20px", display: "inline-block", margin: "10px 10px 10px 0" }}>
+											Renseigner un nom client
+										</label>
+
+										<input 
+											style={{marginBottom: "10px", padding: "5px", width: "50%", borderRadius: "5px", border: "1px solid #ccc", outline: "none", fontSize: "16px", color: "#333", fontWeight: "300", letterSpacing: "1px", textTransform: "uppercase", textAlign: "center", transition: "all 0.3s ease-in-out", boxShadow: "0 0 10px rgba(0,0,0,0.1)", backgroundColor: "#fff"}}
+											onChange={handleChangeGetClientName}
+											value={client}
+											type="text" 
+										/>
+									</div>
+        						</div>
+								<button	onClick={() => clickHandlerConfirmed_Resa("nom_client")}>
+          							Reservation
+        						</button>
+        						<button onClick={() => setmodalisOpen(false)}>
+          							Cancel
+        						</button>
+							</div>
+       					</div>
+      				)}
+					{modalisOpenFalse && (
+       					<div className="popup_false">
+							<div className="popup_container_false">		
+        						<div className="popup_content_false">
+									<h2 style={{color : 'red'}}>Crenaux Indisponible</h2>
+									<h5>Le creneau que vous avez selectionnée contient {crenaux_disponible} pizzas disponible</h5>
+									<h5>Votre reservation contient {pizzas_name.length}</h5>
+									<h4>Veuillez prendre un creneau avec assez de disponibilité ou contacter la pizzeria</h4>
+        						</div>
+        						<button onClick={() => setmodalisOpenFalse(false)}>
+          							C'est compris
+        						</button>
+							</div>
+       					</div>
+      				)}
                     <div className="planning_container_week">
-                        {/* foreach and display creneaux */}
-						{/*  */}
-						{crenaux.map((creneau, i) => (
+						{Object.keys(timeIncrements).map((crenau, i) => (
 							<div className="planning_card">
 								<div className="planning_card_title">
-									<span>{creneau.horaire}</span>
-									<span></span>
+									<span>{timeIncrements[i].creneau}</span>
 								</div>
-								<span>{creneau.nbr_pizza_per_crenau > 0 ? nbrpizza - creneau.nbr_pizza_per_crenau : nbrpizza}</span>
-								{creneau.reservation.length != 0 ? (
-
-        							<div style={{ border: "2px solid #ccc"}}>
-										{/* <h5>{creneau.reservation.nbrPizza}</h5> */}
-									  		{Object.keys(creneau.reservation).map(idx_resa => (
-
-												<div className="planning_card_body">
-													<h5>{creneau.reservation[idx_resa].attributes.client}</h5>
-        							    		{Object.keys(creneau.reservation[idx_resa].attributes.pizzas_reserved).map(idx_pizza_reserved =>(	
-													<span>{creneau.reservation[idx_resa].attributes.pizzas_reserved[idx_pizza_reserved].pizza}</span>
-												))}
-									  			</div>
-
-        							  		))}
-        							</div>
-      							) : null}
+								<div className="planning_card_body">
+									<span
+										onClick={() => onClickHandlerReservation(i)}
+										> Pizza reservable : {timeIncrements[i].dispo}
+									</span>
+								</div>
 							</div>
 						))}
                     </div>
@@ -215,14 +259,4 @@ const PlanningV2 = () => {
 		</div>
 	);
 };
-
-export default PlanningV2;
-
-
-
-								// <div className="planning_card_body">
-								// 		<div 
-								// 			className="display_pizza_rerserved"
-								// 			style={{ border: "2px solid #ccc"}}>
-								// 		</div>
-								// </div>
+export default Planningv2;
