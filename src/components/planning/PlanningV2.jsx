@@ -1,19 +1,20 @@
 import React from "react";
 import axios from 'axios';
 import { API } from "../constant";
-import { useState, useEffect} from 'react';
+import { useState, setState, useEffect} from 'react';
 import "./Planning.css"
 import { useNavigate } from "react-router-dom";
 import { timeIncrements } from "./DefaultPlanning";
+import { timeIncrements1 } from "./DefaultPlanning";
 // import { DefaultPlanning } from "./DefaultPlanning";
 
 const  Planningv2 = () => {
 	
 	const navigate = useNavigate();	
 	let retrievedObject = localStorage.getItem('pizzas');
-	const [pizzas, setPizzas] = useState(JSON.parse(retrievedObject));
 	const [pizzas_name, setPizzasname] = useState([]);
 	const [pizzas_note, setPizzasnote] = useState([]);
+	const [pizzas, setPizzas] = useState(JSON.parse(retrievedObject));
     const [date, setDate] = useState(get_date_formated_today());
 	const [prep_time, setPrep_time] = useState("");
 	const [modalisOpen, setmodalisOpen] = useState(false);
@@ -42,19 +43,41 @@ const  Planningv2 = () => {
             const response = await axios.get(`${API}/reservations?filters[debut_resa][$containsi]=${date}`);
 			setData(response.data.data);
 			update_dispo(response.data.data)
+
         }
         loadReserved(date);
     }
     ,[date]);
 	
 	const setDateQuery = (e) => {
-		console.log(e)
 		setDate(e);
 	}
 
+	function to_restore_by_default_planning(){
+		timeIncrements.map((anObjectMapped, index) => {
+			anObjectMapped.dispo = 6
+		})
+	}
+	
 	function update_dispo(data_reserver){
-		console.log(data_reserver)
-		console.log(timeIncrements)
+		to_restore_by_default_planning()
+		// console.log(data_reserver)
+		// console.log(timeIncrements)
+		timeIncrements.map((anObjectMapped, index) => {
+			// console.log(anObjectMapped.creneau,anObjectMapped.dispo, index)
+			data_reserver.map((obj, idx) => {
+				// console.log(anObjectMapped.creneau.split("-")[0])
+				// console.log(obj.attributes.debut_resa.split("T")[1].split(".")[0].replace(":", "h").split(":")[0].replace("h", ":"))
+				if(obj.attributes.debut_resa.split("T")[1].split(".")[0].replace(":", "h").split(":")[0].replace("h", ":") == anObjectMapped.creneau.split("-")[0].replace(" ", "")){
+					let y = 0
+					Object.keys(obj.attributes.pizzas_reserved).map((pizza,idx) =>{
+						// console.log(pizza, idx)
+						y += 1
+					})
+					anObjectMapped.dispo = anObjectMapped.dispo - y
+				}
+			})
+		})
 	}
 
 	function checkdispo(creneau_reserved){

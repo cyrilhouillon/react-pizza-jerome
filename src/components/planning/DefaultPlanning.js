@@ -71,3 +71,24 @@ for (let i = 0; i < 4; i++) {
   }
 }
 
+
+export const timeIncrements1 = [];
+
+let index1 = 1;
+
+for (let i = 0; i < 4; i++) {
+  for (let j = 0; j < 6; j++) {
+    const start = `${18 + i}:${j * 10}`.padEnd(5, "0");
+    let end = null;
+    if (j < 5) {
+      end = `${18 + i}:${(j + 1) * 10}`.padEnd(5, "0");
+    } else {
+      end = `${19 + i}:00`.padStart(5, "0");
+    }
+    timeIncrements1.push({
+      "creneau": `${start} - ${end}`,
+      "dispo": 6
+  });
+  index1++;
+  }
+}
