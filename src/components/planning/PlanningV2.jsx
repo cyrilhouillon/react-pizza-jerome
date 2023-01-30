@@ -16,7 +16,6 @@ const  Planningv2 = () => {
 	const [pizzas_note, setPizzasnote] = useState([]);
 	const [pizzas, setPizzas] = useState(JSON.parse(retrievedObject));
     const [date, setDate] = useState(get_date_formated_today());
-	const [prep_time, setPrep_time] = useState("");
 	const [modalisOpen, setmodalisOpen] = useState(false);
 	const [modalisOpenFalse, setmodalisOpenFalse] = useState(false);
 	const [debut, setDebut] = useState("");
@@ -79,14 +78,53 @@ const  Planningv2 = () => {
 			})
 		})
 	}
-
-	function checkdispo(creneau_reserved){
-		console.log(timeIncrements[creneau_reserved].dispo)
-		console.log("nombre de pizza a caller")
-		console.log("Réservation", pizzas)
-
+	
+	function getQuantity(pizz){
+		let quantity = 0
+		pizz.map((p) =>{
+			quantity += p.quantity
+		})
+		return quantity
 	}
 
+	function checkdispo(creneau_reserved){
+		
+		let quantity = getQuantity(pizzas)
+
+		if(quantity < timeIncrements[creneau_reserved].dispo){
+			return true			
+		}
+		else{
+			return false
+		}
+	}
+
+	function convert_hour_and_minutes_into_date_format(stringDate){
+		const timeArray = stringDate.split(".");
+		const hour = timeArray[0];
+		const minute = timeArray[1];
+		const date = new Date();
+		let h = date.setHours(hour);
+		date.setMinutes(minute);
+		return date
+	}
+
+	function getTimeToInsert(creneau_reserved){
+		let debut = timeIncrements[creneau_reserved].creneau.split("-")[0].trim().replace(":", ".")
+		let date_debut = convert_hour_and_minutes_into_date_format(debut)
+
+		let fin = timeIncrements[creneau_reserved].creneau.split("-")[1].trim().replace(":", ".")
+		let date_fin = convert_hour_and_minutes_into_date_format(fin)
+
+		data.map((d) => {
+			let fin_resa = d.attributes.fin_resa.split("T")[1].split(".")[0].replace(":", ".").replace(":", ".") 
+			let date_fin_resa = convert_hour_and_minutes_into_date_format(fin_resa)
+			if(date_debut.getTime() < date_fin_resa.getTime() && date_fin_resa.getTime() < date_fin.getTime()){
+				let timeToInsert = d.attributes.fin_resa.split("T")[1].split(".")[0]
+				return timeToInsert
+			}
+		})	
+	}
 
 	const [crenaux_disponible, setCrenaux_disponible] = useState(0);
     const onClickHandlerReservation = (creneau_reserved) => {
@@ -97,8 +135,11 @@ const  Planningv2 = () => {
 		// calcul debut de la reservation en prenant le debut de l'heure clicker
 		// pour incrementer sur tout les possibilité du creneaux
 		// check if have a dispo if not check if you can decale de 3 après toute les autres sinon mesage impossible même decaller 
-		console.log(data)
-		checkdispo(creneau_reserved)
+		
+		if(checkdispo(creneau_reserved)){
+			let time_to_insert = getTimeToInsert(creneau_reserved)
+			console.log(time_to_insert)
+		}
 
 	// Get all resa check dispo
 	// 3 MSG
@@ -194,9 +235,6 @@ const  Planningv2 = () => {
 			<div className="planning__containers">
 				<div className="planning__container__title">
 					<h1>Planning</h1>
-					<p>Le temps de préparation est de {prep_time}</p>
-					{/* <span>avancer toutes les commandes de </span>
-					<span>reculer toutes les commandes de </span> */}
 					<input 
           				type="date"
           				id='resa'
@@ -212,8 +250,6 @@ const  Planningv2 = () => {
 									{pizzas.map((pizza, index) => (
 										<p key={index}>{pizza.quantity} {pizza.name}</p>
 									))}
-									<p>Le temps de préparation est de {prep_time}</p>
-									{/* SET LE DEBUT IT'S OKAY MAINTENANT SET LA FIN */}
 									<p>Reservation du {date} de {debut} à {fin} pour  pizzas</p>
 									<div className="popup_input">
 										<label 
