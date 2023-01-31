@@ -120,9 +120,9 @@ const  Planningv2 = () => {
 			let fin_resa = d.attributes.fin_resa.split("T")[1].split(".")[0].replace(":", ".").replace(":", ".") 
 			let date_fin_resa = convert_hour_and_minutes_into_date_format(fin_resa)
 			if(date_debut.getTime() < date_fin_resa.getTime() && date_fin_resa.getTime() < date_fin.getTime()){
-				let timeToInsert = d.attributes.fin_resa.split("T")[1].split(".")[0]
-				return timeToInsert
+				return d.attributes.fin_resa.split("T")[1].split(".")[0]
 			}
+
 		})	
 	}
 
@@ -137,8 +137,22 @@ const  Planningv2 = () => {
 		// check if have a dispo if not check if you can decale de 3 après toute les autres sinon mesage impossible même decaller 
 		
 		if(checkdispo(creneau_reserved)){
-			let time_to_insert = getTimeToInsert(creneau_reserved)
-			console.log(time_to_insert)
+			let debut = timeIncrements[creneau_reserved].creneau.split("-")[0].trim().replace(":", ".")
+			let date_debut = convert_hour_and_minutes_into_date_format(debut)
+			let fin = timeIncrements[creneau_reserved].creneau.split("-")[1].trim().replace(":", ".")
+			let date_fin = convert_hour_and_minutes_into_date_format(fin)
+			if(timeIncrements[creneau_reserved].dispo == 6){
+				console.log("full dispo")
+			}
+			else{
+			data.map((d) => {
+				let fin_resa = d.attributes.fin_resa.split("T")[1].split(".")[0].replace(":", ".").replace(":", ".") 
+				let date_fin_resa = convert_hour_and_minutes_into_date_format(fin_resa)
+				if(date_debut.getTime() < date_fin_resa.getTime() && date_fin_resa.getTime() < date_fin.getTime()){
+					let time = d.attributes.fin_resa.split("T")[1].split(".")[0]
+					console.log(time)
+				}
+		})}
 		}
 
 	// Get all resa check dispo

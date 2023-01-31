@@ -17,7 +17,7 @@ import SelectedPizza  from './components/SelectedPizza/SelectedPizza';
 import Planning  from './components/planning/Planning';
 import PlanningV2  from './components/planning/PlanningV2';
 import Dsp_Planning  from './components/Display_planning';
-import Accueil from './components/accueil/Accueil';
+import Accueil from './components/accueil/accueil';
 import ForgotPassword from './components/auth/ForgotPassword';
 import Validation from './components/validation/Validation';
 
