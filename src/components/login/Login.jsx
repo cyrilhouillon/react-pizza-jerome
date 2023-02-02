@@ -19,6 +19,7 @@ import { useAuthContext } from "../../context/AuthContext";
 // import useScreenSize from "../../hooks/useScreenSize";
 import { API } from "../constant";
 import { setToken } from "../helpers";
+import { setRole } from "../helpers";
 import "../login/login.css";
 
 // const getRoleLog  = (ctx, next) {
@@ -69,7 +70,6 @@ const Login = () => {
 
         // set the user
         setUser(data.user);
-
         message.success(`Welcome back ${data.user.username}!`);
 
         console.log(data)
@@ -85,16 +85,18 @@ const Login = () => {
         });
 
         const dataRole = await responseRole;
+        setRole(dataRole.data.role.name)
         console.log(dataRole)
         console.log(dataRole.data.role.name)
         if (dataRole?.error) {
-
           throw data?.error
-        } else if(dataRole.data.role.name == "Authenticated"){
+        }else if (dataRole.data.role.name == "administrateur"){
+          document.location.href="/reservation";  
+        }
+         else if(dataRole.data.role.name == "Authenticated"){
           /////////////////////////////////////////////// TOUTES LES CONDITIONS DE REDIRECTION A SET UP ////////////////////////////////
-          navigate("/pizzas");
+          document.location.href="/pizzas";  
         } else {
-          
           console.log(dataRole)
         }
 
@@ -115,7 +117,6 @@ const Login = () => {
                   className="alert_error"
                   message={error}
                   type="error"
-                  closable
                   afterClose={() => setError("")}
               />
           ) : null}
@@ -161,6 +162,9 @@ const Login = () => {
           </Form>
           <Typography.Paragraph className="form_help_text">
             Pas de compte ? <Link to="/inscription">inscription</Link>
+          </Typography.Paragraph>
+          <Typography.Paragraph className="form_help_text">
+            <Link to="/">Mot de passe oublié ? </Link>
           </Typography.Paragraph>
         </Card>
       </Fragment>

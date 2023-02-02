@@ -2,11 +2,13 @@
 import { Button, Space } from "antd";
 import React from "react";
 import { CgWebsite } from "react-icons/cg";
+import { AiOutlineShoppingCart, AiOutlineCloseCircle } from 'react-icons/ai'
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
-import { removeToken } from "./helpers";
+import { removeRole, removeToken } from "./helpers";
 import { setPizzas } from "./helpers";
 import { getPizzas } from "./helpers";
+import { getRole } from "./helpers";
 import {useRef, useEffect, useState} from 'react';
 import {FaBars, FaTimes} from "react-icons/fa";
 import "../style/nav.css";
@@ -17,6 +19,7 @@ const NavBar = () => {
     const [count_items, setCount_items] = useState("");
     const [isActive, setIsActive] = useState(false);
     const [display_pizza_in_cart, setDisplay_pizza_in_cart] = useState([]);
+    const [showSlideBar, setShowSlideBar] = useState(false);
 
     useEffect (() => {
         const loadCart = () => {
@@ -43,13 +46,13 @@ const NavBar = () => {
 
     const handleLogout = () => {
         removeToken();
+        removeRole();
         window.location.reload();
         navigate("./", { replace: true });
     };
 
-    const handleClickDisplayCart = () => {
-        // onclick display a list of selected pizza
-        setIsActive(current => !current);
+    const DisplaySlideCart = () => {
+        console.log("ay")
     }
 
     // const navigatePanier = () => {
@@ -67,16 +70,22 @@ const NavBar = () => {
             <h3>Pizza-jérome</h3>
             <nav ref={navRef}>
                 <a href='./'>Accueil</a>
-                <a href='/pizzas'>Pizzas</a>
-                <a href='/reservation'>Réservation</a>
-                <a href='/planningV2'>planningV2</a>
+                <a href='/carte'>La carte</a>
+                {getRole() === "administrateur" && (
+                    <> 
+                        <a href='/pizzas'>Pizzas</a>    
+                        <a href='/planning'>Planning</a>    
+                        <a href='/reservation'>Réservation</a>    
+                    </>
+                )}
+                
+                
+
                 {user ? (
                     <> 
                         <a href="/profile">{user.username}</a>
                         <a
-                            // style cursor pointer
                             style={{ cursor: "pointer" }}
-
                             className="auth_button_signUp"
                             type="primary"
                             onClick={handleLogout}
@@ -87,27 +96,56 @@ const NavBar = () => {
                 ) :( 
                 <>
                     <a href='/connexion'>Connexion</a>
-                    <a href='/inscription'>inscription</a>
+                    <a href='/inscription'>Inscription</a>
                 </>
 
-                )}
-                <div className="cart" id="dropdown_cart" onClick={handleClickDisplayCart}>
-                    <span>{ count_items }</span>    
-                <div
-                style={{
-                       display: isActive ? "block" : "none",
-                     }}
-                className="toogle_dropdown_cart"
-                >
-                    {display_pizza_in_cart.map((pizza, index) => (
-                        <div key={index}>
-                            <p style={{color: "black"}}>{pizza.name}</p>
-                            {/* <button></button> */}
-                        </div>
-                    ))}
-                </div>
-                </div>
+                )
+                }
                 
+
+                {/* PANIER ET BOUTON SUR LA CARTE */}
+                
+                {/* <div> */}
+                    {/* {display_pizza_in_cart.map((pizza, index) => ( */}
+                        {/* <div key={index}> */}
+                            {/* <p style={{color: "black"}}>{pizza.name}</p> */}
+                        {/* </div> */}
+                    {/* ))} */}
+                {/* </div> */}
+                
+                {getRole() === 'Authenticated' && (
+                    <>
+                    {/* onClick={() => DisplaySlideCart()} */}
+                        <div className="cart" id="dropdown_cart" onClick={() => setShowSlideBar(!showSlideBar)} ><AiOutlineShoppingCart className='nav-icon'/></div>
+                        {/* <span>{ count_items }</span> */}
+                        {showSlideBar && (
+                            <div className="slidebar"
+                            style={{
+                                height: "100%",
+                                width: "40%",
+                                backgroundColor: "lightgray",
+                                position: "absolute",
+                                top: 0,
+                                right: 0,
+                                bottom: 0,
+                                zIndex: 1,
+                                transition: "transform 0.9s ease-out",
+                            }}
+                            >
+                                <div
+                                  className="icon-close"
+                                  style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    right: 0
+                                  }}
+                                >
+                                  <AiOutlineCloseCircle className="icon" onClick={() => setShowSlideBar(false)}/>
+                                </div>
+                            </div>
+                        )}
+                    </>
+                )}
                 <button className='nav-btn nav-close-btn' onClick={showNavbar}>
                     <FaTimes />
                 </button>
@@ -115,8 +153,7 @@ const NavBar = () => {
             <button className='nav-btn' onClick={showNavbar}>
                 <FaBars />
             </button>
-         </header>   
-
+         </header>
     );
 };
 

@@ -16,7 +16,6 @@ const Accueil = () => {
       }
     })
     .then(function (res) { 
-      console.log(res);
      })
 
 

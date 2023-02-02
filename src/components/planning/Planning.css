@@ -110,7 +110,14 @@
 }
 span{
     cursor: pointer;
-    padding: 2%;
+}
+.count_nbr_pizza{
+    cursor: pointer;
+    padding: 3%;
+}
+.header_count_nbr_pizza{
+    cursor: pointer;
+    padding: 4%;
 }
 span:hover{
     background-color: #ccc;

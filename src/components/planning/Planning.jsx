@@ -22,10 +22,10 @@ const  Planning = () => {
 	const [fin, setFin] = useState("");
 	const [lst_pizza_object, setLst_pizza_object] = useState({});
 	const [pizza_reserved, setPizzaReserved] = useState({})
-	const navigateValidate = () => {
-		navigate('/reservation');
-	}
-	console.log(pizzas)
+	if (!pizzas){
+		console.log("ok")
+		console.log(pizzas)	
+	}	
 
 	// reformat date to dd/mm/yyyy
 	function get_date_formated_today(){
@@ -36,22 +36,6 @@ const  Planning = () => {
 		today = yyyy + '-' + mm + '-' + dd;
 		return today;
 	}
-
-	// const [nbrpizza, setNbrPizza] = useState(0)
-	// function get_nbr_Pizza(){
-	// 	const date_of_day = new Date();
-    // 	const dayOfWeek = date_of_day.getDay();
-	// 	console.log(dayOfWeek)
-	// 	// vendredi == 5 | samedi == 6 | dimanche == 7
-	// 	if (dayOfWeek == 5 || dayOfWeek == 6 || dayOfWeek == 0){
-	// 		setNbrPizza(7)
-	// 	}
-	// 	else{
-	// 		setNbrPizza(6)
-	// 	}
-	// 	console.log(nbrpizza)
-	// }
-
     
 	const [crenaux, setCrenaux] = useState([
 		{"horaire" : "18h00 - 18h10", "disponibilité" : ["disponible", "disponible", "disponible", "disponible", "disponible", "disponible"], "count_indisponible" : 6 }, 
@@ -133,6 +117,8 @@ const  Planning = () => {
 		let lstpizza_note = [];
 		let lstpizza_taille = [];
 		let prix_total = 0;
+	if(pizzas){
+
 		pizzas.forEach(pizza => {
 
 			for (let i = 0; i < pizza.quantity; i++) {
@@ -153,7 +139,8 @@ const  Planning = () => {
     
 		let response = secondsToms(number_pizzas * time_one_pizza);
 		setPrep_time(response);
-	},) 
+	}
+	},)
 
 
 	const [count, setCount] = useState(0)
@@ -444,13 +431,6 @@ const  Planning = () => {
 		let difference = new Date(res) - new Date(tmp_data[0].attributes.fin_resa);
 		// divide the difference by 100 seconds
 		let secondeDifference = Math.floor(difference / 1000 / 100);
-		// console.log(secondeDifference)
-
-		// transform into minutes and seconds
-		// let minutes = Math.floor(difference / 1000 / 60);
-		// let seconds = Math.floor(difference / 1000) - minutes * 60;
-		// // divide minutes and seconds per 100 
-		// console.log(minutes, seconds)
 		console.log(tmp_data[0].attributes.fin_resa, res)
 		console.log(tmp_data)
 		tmp_data.map((resa, index) => {
@@ -551,15 +531,14 @@ console.log(crenaux)
 			<div className="planning__containers">
 				<div className="planning__container__title">
 					<h1>Planning</h1>
-					<p>Le temps de préparation est de {prep_time}</p>
-					{/* <span>avancer toutes les commandes de </span>
-					<span>reculer toutes les commandes de </span> */}
 					<input 
           				type="date"
           				id='resa'
 						value={date}
           				onChange={(e) => setDateQuery(e.target.value)}
           			/>
+					{pizzas && <p>Le temps de préparation est de {prep_time}</p>}
+					{!pizzas && <p>Aucune pizza selectionée</p>}
 
 					{/* <input 
 						type="time" id="appt" name="appt"
@@ -579,13 +558,11 @@ console.log(crenaux)
        					<div className="popup">
 							<div className="popup_container">		
         						<div className="popup_content">
-          							{/* display le debut la fin avec un format sympa + les pizza et leur quantité */}
 									<h5>Récapitulaitf de la commande : </h5>
 									{pizzas.map((pizza, index) => (
 										<p key={index}>{pizza.quantity} {pizza.name}</p>
 									))}
 									<p>Le temps de préparation est de {prep_time}</p>
-									{/* SET LE DEBUT IT'S OKAY MAINTENANT SET LA FIN */}
 									<p>Reservation du {date} de {debut} à {fin} pour  pizzas</p>
 									<div className="popup_input">
 										<label 
@@ -637,15 +614,12 @@ console.log(crenaux)
        					</div>
       				)}
                     <div className="planning_container_week">
-                        {/* foreach and display creneaux */}
-						{/*  */}
 						{crenaux.map((creneau, i) => (
 							<div className="planning_card">
 								<div className="planning_card_title">
 									<span>{creneau.horaire}</span>
 								</div>
 								<div className="planning_card_body">
-									<span>{creneau.count_indisponible}</span>
 									{creneau.disponibilité.map((dispo, i) => (
 										<div 
 											 onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 

@@ -68,6 +68,7 @@ const  Planningv2 = () => {
 				// console.log(anObjectMapped.creneau.split("-")[0])
 				// console.log(obj.attributes.debut_resa.split("T")[1].split(".")[0].replace(":", "h").split(":")[0].replace("h", ":"))
 				if(obj.attributes.debut_resa.split("T")[1].split(".")[0].replace(":", "h").split(":")[0].replace("h", ":") == anObjectMapped.creneau.split("-")[0].replace(" ", "")){
+					console.log(obj.attributes.debut_resa.split("T")[1].split(".")[0].replace(":", "h").split(":")[0].replace("h", ":"), anObjectMapped.creneau.split("-")[0].replace(" ", ""))
 					let y = 0
 					Object.keys(obj.attributes.pizzas_reserved).map((pizza,idx) =>{
 						// console.log(pizza, idx)
@@ -142,7 +143,7 @@ const  Planningv2 = () => {
 			let fin = timeIncrements[creneau_reserved].creneau.split("-")[1].trim().replace(":", ".")
 			let date_fin = convert_hour_and_minutes_into_date_format(fin)
 			if(timeIncrements[creneau_reserved].dispo == 6){
-				console.log("full dispo")
+				console.log(timeIncrements[creneau_reserved].creneau.split("-")[0].trim())
 			}
 			else{
 			data.map((d) => {
@@ -316,10 +317,13 @@ const  Planningv2 = () => {
 						{Object.keys(timeIncrements).map((crenau, i) => (
 							<div className="planning_card">
 								<div className="planning_card_title">
-									<span>{timeIncrements[i].creneau}</span>
+									<span
+										className="header_count_nbr_pizza"
+									>{timeIncrements[i].creneau}</span>
 								</div>
 								<div className="planning_card_body">
 									<span
+										className="count_nbr_pizza"
 										onClick={() => onClickHandlerReservation(i)}
 										> Pizza reservable : {timeIncrements[i].dispo}
 									</span>

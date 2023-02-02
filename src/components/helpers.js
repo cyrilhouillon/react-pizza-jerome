@@ -27,3 +27,15 @@ export const removePizzas = () => {
     localStorage.removeItem("pizzas");
 };
 
+export const setRole = (role) => {
+    localStorage.setItem("role", role);
+}
+
+export const getRole = () => {
+    return localStorage.getItem("role"); 
+};
+
+export const removeRole = () => {
+    localStorage.removeItem("role");
+};
+
