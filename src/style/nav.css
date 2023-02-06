@@ -52,27 +52,6 @@ nav {
 	display: flex;
 	align-items: center;
 }
-.cart{
-	cursor: pointer;
-	width: 70%;
-	height: 70%;
-}
-.nav-icon{
-    width: 30%;
-    height: 30%;
-}
-
-.cart-header{
-	display: flex;
-	justify-content: flex-start;
-	align-items: flex-start;
-	height: 10%;
-	width: 100%;
-	border-bottom:1px solid black;
-}
-.icon-close{
-	width: 30%;
-}
 
 .toogle_dropdown_cart{
 	/* make a div 500x500 position fixed and scollable*/

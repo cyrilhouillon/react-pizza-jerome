@@ -22,6 +22,8 @@ import Accueil from './components/accueil/accueil';
 import ForgotPassword from './components/auth/ForgotPassword';
 import Validation from './components/validation/Validation';
 import Carte from './components/carte/Carte';
+import Panier from './components/panier/Panier';
+import Planification from './components/planification/Planification';
 
 function App() {
     
@@ -49,6 +51,11 @@ function App() {
                 <Route 
                     path="/planning" 
                     element={getRole() === "administrateur" ? <Planning /> : <Navigate to="/"/>}
+                />
+
+                <Route 
+                    path="/planification" 
+                    element={getRole() === "administrateur" ? <Planification /> : <Navigate to="/"/>}
                 />
                 
                 {/* <Route
@@ -81,6 +88,7 @@ function App() {
                 <Route path='/' element={<Accueil />} />
                 <Route path='/reset' element={<ForgotPassword />} />
                 <Route path='/validation' element={<Validation />} />
+                <Route path='/panier' element={<Panier />} />
             </Routes>
 
         </div>

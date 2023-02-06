@@ -2,10 +2,16 @@ import {useEffect} from 'react';
 
 import './carte.css';
 import { TbSquarePlus, TbSquareMinus } from 'react-icons/tb'
+import { AiOutlineShoppingCart, AiOutlineCloseCircle } from 'react-icons/ai'
 import '../accueil/accueil.css';
 import getAllPizzasPopulate from "../../api/PizzasApi";
 import { useState } from 'react';
 import { useAuthContext } from "../../context/AuthContext";
+import { getRole } from "../helpers";
+import { Navigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
+
+
 
 const Carte = () => {
 
@@ -14,6 +20,51 @@ const Carte = () => {
     const [url] = useState("https:/aquoipizza.com/uploads/pizza_9e892b8f7e.jpg")
     const [toggle, setToggle] = useState(false);
     const [Taille, SetTaille] = useState("Grande")
+    const [showSlideBar, setShowSlideBar] = useState(false);
+
+    const navigate = useNavigate();
+
+    const [cart, setCart] = useState(() => {
+        const storedCart = localStorage.getItem("cart");
+        return storedCart ? JSON.parse(storedCart) : [];
+      });
+
+  useEffect(() => {    
+    localStorage.setItem("cart", JSON.stringify(cart));
+    totalQuantity()
+  }, [cart]);
+
+  const addToCart = (item) => {
+    const index = cart.findIndex((cartItem) => cartItem.id === item.id);
+    if (index === -1) {
+      setCart([...cart, { ...item, quantity: 1 }]);
+    } else {
+      const newCart = [...cart];
+      newCart[index].quantity += 1;
+      setCart(newCart);
+    }
+  };
+
+  const deleteFromCart = (itemToDelete) => {
+    const index = cart.findIndex((cartItem) => cartItem.id === itemToDelete.id);
+    if (index === -1) {
+      return;
+    }
+
+    const newCart = [...cart];
+    if (newCart[index].quantity > 1) {
+      newCart[index].quantity -= 1;
+      setCart(newCart);
+    } else {
+      newCart.splice(index, 1);
+      setCart(newCart);
+    }
+  };
+
+  const [AllQuantity, setAllQuantity] = useState(0)
+  const totalQuantity = () => {
+    setAllQuantity(cart.reduce((total, item) => total + item.quantity, 0));
+  };
 
     const handleToggle = () => {
       setToggle(!toggle);
@@ -33,13 +84,11 @@ const Carte = () => {
         })
     }, [])
 
-    const ClickSavePizzaToCart = (item) => {
-        console.log("a rajouter", item)
+    function redirectToCart(){
+        navigate("/panier")
     }
 
-    const ClickSupprPizzaToCart = (item) => {
-        console.log("a enlever", item)
-    }
+    console.log(AllQuantity, cart)
 
 return (
 
@@ -52,11 +101,17 @@ return (
         <div className='container-bg-carte'>
             <div className='carte-center'>
                 <h2>La carte</h2>
-                <div className='btn-taille'>
-                    Taille selectionnée
-                    <button onClick={handleToggle}>
-                        {toggle ? "Moyenne" : "Grande"}
-                    </button>
+                <div className='btn-header'>
+                    <div className='btn-taille'>
+                        Taille selectionnée
+                        <button onClick={handleToggle}>
+                            {toggle ? "Moyenne" : "Grande"}
+                        </button>
+                    </div>
+                    <div className="cart" id="dropdown_cart" onClick={() => redirectToCart()} >
+                        <AiOutlineShoppingCart className='nav-icon'/>
+                        <span>{AllQuantity}</span>
+                    </div>                            
                 </div>
                 <div className="scrollable-container">
                     {data.map((item, index) => (
@@ -80,14 +135,10 @@ return (
                                             )}
                                         </div>
                                         <div className='div_footer'>
-                                            {user ?(
-                                                <>
-                                                <div className='div_footer_button'>
-                                                    <div onClick={() => ClickSavePizzaToCart(item) } className='button'><TbSquarePlus className='icon' /></div>
-                                                    <div onClick={() => ClickSupprPizzaToCart(item) } className='button'><TbSquareMinus className='icon' /></div>
-                                                </div>
-                                                </>
-                                            ) : (<></>)}
+                                            <div className='div_footer_button'>
+                                                <div onClick={() => addToCart(item)} className='button'><TbSquarePlus className='icon' /></div>
+                                                <div onClick={() => deleteFromCart(item)} className='button'><TbSquareMinus className='icon' /></div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

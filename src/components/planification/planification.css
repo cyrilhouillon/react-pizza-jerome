@@ -1,0 +1,30 @@
+.container{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: self-start;
+    margin: 1%;
+    border: 1px solid black;
+}
+
+.container-resume{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    width: 49%;
+    height: 49%;
+}
+
+.container-form-validation{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
+    width: 49%;
+    height: 49%;
+}
+
+.bold-text {
+  font-weight: bold;
+}

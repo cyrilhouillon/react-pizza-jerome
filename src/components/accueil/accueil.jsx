@@ -33,7 +33,7 @@ const Accueil = () => {
         <p>Tel: 06 14 62 72 48</p>
       </div>
 
-      <div className='main-content'>
+      {/* <div className='main-content'>
         <div className='group-content'>
           <div className='single-content'>
             <button onClick={navigateProduct} >Nos produits</button>
@@ -48,7 +48,7 @@ const Accueil = () => {
             <p>content</p>
           </div>
         </div>
-      </div>
+      </div> */}
 
         <div className='c'>
           <ul>

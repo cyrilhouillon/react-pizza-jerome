@@ -1,8 +1,6 @@
 
 import { Button, Space } from "antd";
 import React from "react";
-import { CgWebsite } from "react-icons/cg";
-import { AiOutlineShoppingCart, AiOutlineCloseCircle } from 'react-icons/ai'
 import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
 import { removeRole, removeToken } from "./helpers";
@@ -19,7 +17,6 @@ const NavBar = () => {
     const [count_items, setCount_items] = useState("");
     const [isActive, setIsActive] = useState(false);
     const [display_pizza_in_cart, setDisplay_pizza_in_cart] = useState([]);
-    const [showSlideBar, setShowSlideBar] = useState(false);
 
     useEffect (() => {
         const loadCart = () => {
@@ -113,39 +110,6 @@ const NavBar = () => {
                     {/* ))} */}
                 {/* </div> */}
                 
-                {getRole() === 'Authenticated' && (
-                    <>
-                    {/* onClick={() => DisplaySlideCart()} */}
-                        <div className="cart" id="dropdown_cart" onClick={() => setShowSlideBar(!showSlideBar)} ><AiOutlineShoppingCart className='nav-icon'/></div>
-                        {/* <span>{ count_items }</span> */}
-                        {showSlideBar && (
-                            <div className="slidebar"
-                            style={{
-                                height: "100%",
-                                width: "40%",
-                                backgroundColor: "lightgray",
-                                position: "absolute",
-                                top: 0,
-                                right: 0,
-                                bottom: 0,
-                                zIndex: 1,
-                                transition: "transform 0.9s ease-out",
-                            }}
-                            >
-                                <div
-                                  className="icon-close"
-                                  style={{
-                                    position: "absolute",
-                                    top: 0,
-                                    right: 0
-                                  }}
-                                >
-                                  <AiOutlineCloseCircle className="icon" onClick={() => setShowSlideBar(false)}/>
-                                </div>
-                            </div>
-                        )}
-                    </>
-                )}
                 <button className='nav-btn nav-close-btn' onClick={showNavbar}>
                     <FaTimes />
                 </button>

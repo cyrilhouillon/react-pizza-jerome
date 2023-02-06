@@ -206,7 +206,7 @@ const ClickSaveSelectedPizza = () => {
     setPizzas(display_pizzas_selected);
     set_success_message("Vos pizzas ont bien été sauvegardées");
     setTimeout(() => {
-      window.location.href = "/planning"; 
+      window.location.href = "/planification"; 
     }, 1000);
   }
   else {

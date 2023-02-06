@@ -537,8 +537,8 @@ console.log(crenaux)
 						value={date}
           				onChange={(e) => setDateQuery(e.target.value)}
           			/>
-					{pizzas && <p>Le temps de préparation est de {prep_time}</p>}
-					{!pizzas && <p>Aucune pizza selectionée</p>}
+					{/* {pizzas && <p>Le temps de préparation est de {prep_time}</p>}
+					{!pizzas && <p>Aucune pizza selectionée</p>} */}
 
 					{/* <input 
 						type="time" id="appt" name="appt"
@@ -621,12 +621,25 @@ console.log(crenaux)
 								</div>
 								<div className="planning_card_body">
 									{creneau.disponibilité.map((dispo, i) => (
+										(dispo === "disponible" ? (
+										<>
 										<div 
 											 onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
 											 className="display_pizza_rerserved"
 											 style={{ border: "2px solid #ccc"}}>
 											<span style={{ color: `${checkColor(dispo)}`}} >{dispo}</span>
 										</div>
+										</>
+										) : (
+											<>
+										<div 
+											 onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
+											 className="display_pizza_rerserved"
+											 style={{ border: "2px solid #ccc"}}>
+											<span style={{ color: `${checkColor(dispo)}`}} >{dispo}</span>
+										</div>
+										</>
+										))
 									))}
 								</div>
 							</div>
