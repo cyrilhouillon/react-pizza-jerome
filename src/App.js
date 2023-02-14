@@ -86,7 +86,7 @@ function App() {
                 <Route path='/carte' element={<Carte />} />
                 <Route path='/connexion' element={<Login />} />
                 <Route path='/' element={<Accueil />} />
-                <Route path='/reset' element={<ForgotPassword />} />
+                <Route path='/auth/reset-password' element={<ForgotPassword />} />
                 <Route path='/validation' element={<Validation />} />
                 <Route path='/panier' element={<Panier />} />
             </Routes>

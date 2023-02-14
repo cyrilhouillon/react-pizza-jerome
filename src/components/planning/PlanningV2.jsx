@@ -18,7 +18,7 @@ const  Planningv2 = () => {
     const [date, setDate] = useState(get_date_formated_today());
 	const [modalisOpen, setmodalisOpen] = useState(false);
 	const [modalisOpenFalse, setmodalisOpenFalse] = useState(false);
-	const [debut, setDebut] = useState("");
+	const [debut, setDebut] = useState("");	
 	const [fin, setFin] = useState("");
 	const [lst_pizza_object, setLst_pizza_object] = useState({});
 	

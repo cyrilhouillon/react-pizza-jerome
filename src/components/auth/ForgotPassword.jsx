@@ -9,25 +9,25 @@ function ForgotPassword() {
 
   async function handleSubmit (event) {
     event.preventDefault();
-    console.log(email)
-  await axios(`https://aquoipizza.com/api/auth/forgot-password  `, {
-      method: "POST",
-      // email: email, 
-      headers: {
-        'Access-Control-Allow-Origin': '*',
-        'Content-Type': 'application/json',
-      },  
-      body: JSON.stringify(email),
-      // email : email,
-      // email: email, // user's email
-    })
-    .then(response => {
-      console.log('Your user received an email');
-      console.log(response)
-    })
-    .catch(error => {
-      console.log('An error occurred:', error.response);
-    });
+    console.log(email)  
+    // await axios(`https://aquoipizza.com/api/auth/forgot-password  `, {
+  //     method: "POST",
+  //     // email: email, 
+  //     headers: {
+  //       'Access-Control-Allow-Origin': '*',
+  //       'Content-Type': 'application/json',
+  //     },  
+  //     body: JSON.stringify(email),
+  //     // email : email,
+  //     // email: email, // user's email
+  //   })
+  //   .then(response => {
+  //     console.log('Your user received an email');
+  //     console.log(response)
+  //   })
+  //   .catch(error => {
+  //     console.log('An error occurred:', error);
+  //   });
 
   };
 

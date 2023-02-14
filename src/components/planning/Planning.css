@@ -155,3 +155,9 @@ span:hover{
       height: 100%;
       margin: 20px;
   }
+
+  canvas {
+    background: rgb(95, 93, 93);
+    display: block;
+    margin: 0 auto;
+  }

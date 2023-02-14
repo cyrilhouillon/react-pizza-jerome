@@ -1,9 +1,11 @@
 import React from "react";
 import axios from 'axios';
 import { API } from "../constant";
-import { useState, useEffect} from 'react';
+import { useState, useEffect, useRef} from 'react';
 import "./Planning.css"
 import { useNavigate } from "react-router-dom";
+import  {AiOutlinePlusCircle} from "react-icons/ai"
+
 
 const  Planning = () => {
 	
@@ -22,9 +24,10 @@ const  Planning = () => {
 	const [fin, setFin] = useState("");
 	const [lst_pizza_object, setLst_pizza_object] = useState({});
 	const [pizza_reserved, setPizzaReserved] = useState({})
+	const [max, setMaxDispo] = useState([])
 	if (!pizzas){
 		console.log("ok")
-		console.log(pizzas)	
+		// console.log(pizzas)	
 	}	
 
 	// reformat date to dd/mm/yyyy
@@ -142,7 +145,6 @@ const  Planning = () => {
 	}
 	},)
 
-
 	const [count, setCount] = useState(0)
 	function strcutured_pizza_reserved(data){
 		setCrenaux1([
@@ -211,7 +213,6 @@ const  Planning = () => {
 					// console.log(res, transform_debut)
                     
 					if (transform_debut == res) {
-
 						creneau.disponibilité.map((dispo, index_dispo) => {
 
 							if (index_dispo === i){
@@ -233,6 +234,26 @@ const  Planning = () => {
 		setCrenaux(crenaux1);
     }
 	} 
+	useEffect(()=>{
+        const getMaxDispo = async () => {
+			let max = []
+			crenaux.map((creneau, y) => {
+				let c = 0
+				creneau.disponibilité.map((dispo, i) => {
+					if (dispo == "disponible" && (c === 0)){
+						max.push(i)
+						c = 3
+					} 
+				})
+			})
+			setMaxDispo(max) 
+		}
+        getMaxDispo();
+		// console.log(date)
+		// console.log(crenaux)
+    }
+    ,[crenaux]);
+	
 
 
 	const checkColor = (dispo) => {
@@ -359,7 +380,6 @@ const  Planning = () => {
 			setmodalisOpen(true);
 		} 
 	}
-
     }
 
 	const [client, setclient] = useState('');
@@ -415,7 +435,7 @@ const  Planning = () => {
 			return
 		}
 
-		console.log(tmp_dispo, tmp_indispobible)
+		// console.log(tmp_dispo, tmp_indispobible)
 		let res = date + "T" + tmp_fin + ".000Z";
 		let sorted_data = data.sort((a, b) => {
 			return new Date(b.attributes.debut_resa) - new Date(a.attributes.debut_resa);
@@ -431,8 +451,8 @@ const  Planning = () => {
 		let difference = new Date(res) - new Date(tmp_data[0].attributes.fin_resa);
 		// divide the difference by 100 seconds
 		let secondeDifference = Math.floor(difference / 1000 / 100);
-		console.log(tmp_data[0].attributes.fin_resa, res)
-		console.log(tmp_data)
+		// console.log(tmp_data[0].attributes.fin_resa, res)
+		// console.log(tmp_data)
 		tmp_data.map((resa, index) => {
 			const datas = {"data":{}};
 			datas.data.id = resa.id;
@@ -454,7 +474,7 @@ const  Planning = () => {
 			// console.log(tmp_fin)
 			datas.data["fin_resa"] = tmp_fin
 
-			console.log(datas, resa.id)
+			// console.log(datas, resa.id)
 			updateById(datas, resa.id)
 		})
 		// reload page
@@ -464,7 +484,7 @@ const  Planning = () => {
 		, 3000);
 	}
 
-console.log(crenaux)
+	// console.log(crenaux)
 	function updateById(datas, id){
 		axios({
 			method: 'put',
@@ -483,16 +503,67 @@ console.log(crenaux)
 		// make five second delay
 	}
 
+	const [canva, SetCanvas] = useState(false)
+	const canvasRef = useRef(null)
+	const makeCanvaForPrint = (h) =>{
+		const canvas = canvasRef.current
+  		const context = canvas.getContext('2d')
+		if (canva){
+			console.log("ok")
+			context.clearRect(0, 0, canvas.width, canvas.height);
+			SetCanvas(...[false])
+			
+			return
+		}
+		// iterate all creneaux check 
+		SetCanvas(...[true])
+  		
+      	context.font = "30px Arial";
+      	context.strokeText(h, 2, 50);
+      	context.font = "15px Arial";
+		console.log(h)
+		let c = 100
+		crenaux.map((item, i) => {
+			if (item.horaire == h){
+				item.disponibilité.map((dispo, y) =>{
+					if(dispo != "disponible"){
+						console.log(dispo)
+						context.strokeText(dispo, 1, c);
+						c += 50
+					}
+				})
+			}
+		})
+	}
+
+
+	function exampleDrawing(){
+		var canvas = document.getElementById("canvas");
+		var ctx = canvas.getContext("2d");
+		ctx.fillStyle = "#FF0000";
+		ctx.fillRect(0,0,150,75);
+	}
+
+	  
+	function download(){
+		var canvas = document.getElementById("canvas");
+		var url = canvas.toDataURL("image/png");
+		var link = document.createElement('a');
+		link.download = 'filename.png';
+		link.href = url;
+		link.click();
+	}
+
 	const clickHandlerConfirmed_Resa = () => {
 		// if client name is empty
 		if (client == ''){
 			alert("Veuillez renseigner votre nom");
 		}
 		else{
-		console.log(date + debut)
+		// console.log(date + debut)
 		let date_debut = date + "T" + debut + ".000Z";
 		let date_fin = date + "T" + fin + ".000Z";
-		console.log(lst_pizza_object);
+		// console.log(lst_pizza_object);
 		const datas = {
 			"data":
 			{
@@ -503,6 +574,7 @@ console.log(crenaux)
 				"informations":info_Supp,
 				"prix_total":prix_total,
 			}}
+
 		axios({
 			method: 'post',
 			url: `${API}/reservations`,
@@ -525,12 +597,50 @@ console.log(crenaux)
 				console.log("An error occurred:", error.response);
 			});
 		}}
+
+		const RenderingPlanning = () =>{
+			// let max = getMaxDispo()
+			return (
+			crenaux.map((creneau, y) => (
+				<div className="planning_card">
+					<div onClick={() => makeCanvaForPrint(creneau.horaire)} className="planning_card_title">
+						<span>{creneau.horaire}</span>
+					</div>
+					<div className="planning_card_body">
+						{creneau.disponibilité.map((dispo, i) => (
+							(dispo != "disponible" ? (
+								<>
+									<div 
+								 		onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
+								 		className="display_pizza_rerserved"
+								 		style={{ border: "2px solid #ccc"}}>
+										<span style={{ color: `${checkColor(dispo)}`}} >{dispo}</span>
+									</div> 
+								</>
+							) : ((dispo === "disponible") && (i == max[y]) ?(
+								<>
+									<div 
+									  onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
+								      className="display_pizza_rerserved"
+								      style={{ border: "2px solid #ccc"}}>
+										<AiOutlinePlusCircle />
+									</div>
+								</>) : (<></>))) 
+						))}
+					</div>
+				</div>
+			)))
+		}
+
 	return (
 		// display pizzas in card
 		<div className="plannings">
 			<div className="planning__containers">
 				<div className="planning__container__title">
 					<h1>Planning</h1>
+					{!pizzas && (
+						<div>Veuillez reserver une commandes pizzas pour pouvoir reserver un crenau</div>
+					)}
 					<input 
           				type="date"
           				id='resa'
@@ -538,7 +648,7 @@ console.log(crenaux)
           				onChange={(e) => setDateQuery(e.target.value)}
           			/>
 					{/* {pizzas && <p>Le temps de préparation est de {prep_time}</p>}
-					{!pizzas && <p>Aucune pizza selectionée</p>} */}
+					{!pizzas && <p>Aucune pizza selectionée</p>}*/}
 
 					{/* <input 
 						type="time" id="appt" name="appt"
@@ -554,6 +664,9 @@ console.log(crenaux)
 						onChange={(e) => setAvance(e.target.value)}
 					/>
 					<button onClick={getDispo}>Avancer</button> */}
+					{/* {canva &&( */}
+					{/* )} */}
+
 					{modalisOpen && (
        					<div className="popup">
 							<div className="popup_container">		
@@ -614,39 +727,40 @@ console.log(crenaux)
        					</div>
       				)}
                     <div className="planning_container_week">
-						{crenaux.map((creneau, i) => (
-							<div className="planning_card">
-								<div className="planning_card_title">
-									<span>{creneau.horaire}</span>
-								</div>
-								<div className="planning_card_body">
-									{creneau.disponibilité.map((dispo, i) => (
-										(dispo === "disponible" ? (
-										<>
-										<div 
-											 onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
-											 className="display_pizza_rerserved"
-											 style={{ border: "2px solid #ccc"}}>
-											<span style={{ color: `${checkColor(dispo)}`}} >{dispo}</span>
-										</div>
-										</>
-										) : (
-											<>
-										<div 
-											 onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
-											 className="display_pizza_rerserved"
-											 style={{ border: "2px solid #ccc"}}>
-											<span style={{ color: `${checkColor(dispo)}`}} >{dispo}</span>
-										</div>
-										</>
-										))
-									))}
-								</div>
+					{crenaux.map((creneau, y) => (
+						<div className="planning_card">
+							<div onClick={() => makeCanvaForPrint(creneau.horaire)} className="planning_card_title">
+								<span>{creneau.horaire}</span>
 							</div>
-						))}
+							<div className="planning_card_body">
+								{creneau.disponibilité.map((dispo, i) => (
+									(dispo != "disponible" ? (
+										<>
+											<div 
+								 				onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
+								 				className="display_pizza_rerserved"
+								 				style={{ border: "2px solid #ccc"}}>
+												<span style={{ color: `${checkColor(dispo)}`}} >{dispo}</span>
+											</div> 
+										</>
+										) : ((dispo === "disponible") && (pizzas) && (i == max[y]) ?(
+										<>
+											<div 
+									  			onClick={() => onClickHandlerReservation(creneau.horaire, i, dispo)} 
+								      			className="display_pizza_rerserved"
+								      			style={{ border: "2px solid #ccc"}}>
+												<AiOutlinePlusCircle />
+												</div>
+										</>) : (<></>))) 
+								))}
+							</div>
+						</div>
+					))}
+					{/* <RenderingPlanning /> */}
                     </div>
 				</div>
 			</div>
+			<canvas id="canvas" ref={canvasRef} width="200" height="300"></canvas>
 		</div>
 	);
 };

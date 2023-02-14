@@ -16,7 +16,9 @@ import axios from 'axios';
 import { Fragment, useState } from "react";
 import { setToken } from "./helpers";
 import "../style/inscription.css";
+import { useNavigate } from "react-router-dom";
 import { useAuthContext } from "../context/AuthContext";
+import { Link } from "react-router-dom";
 // import useScreenSize from "../../hooks/useScreenSize";
 import { API } from "./constant";
 // import { setToken } from "../../helpers";
@@ -24,7 +26,7 @@ import { API } from "./constant";
 
 const SignUp = () => {
   // const { isDesktopView } = useScreenSize();
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const { setUser } = useAuthContext();
 
@@ -54,10 +56,12 @@ const SignUp = () => {
 
         // set the user
         setUser(data.user);
-
-        message.success(`Bienvenue ${data.user.username} !`);
-
-        // navigate("/profile", { replace: true });
+        setTimeout(() => {
+            message.success(`Bienvenue ${data.user.username} !`);
+        }, 1000); // Wait for 1 second (1000 milliseconds) before executing the code
+        setTimeout(() => {
+        navigate("/");
+        }, 3000); // Wait for 1 second (1000 milliseconds) before executing the code
       }
     } catch (error) {
       console.error(error);
@@ -78,7 +82,6 @@ const SignUp = () => {
                       className="alert_error"
                       message={error}
                       type="error"
-                      closable
                       afterClose={() => setError("")}
                   />
               ) : null}
@@ -93,12 +96,6 @@ const SignUp = () => {
                     className="input-inscription"
                     label="Identifiant"
                     name="username"
-                    rules={[
-                      {
-                        required: true,
-                        type: "string",
-                      },
-                    ]}
                 >
                   <Input placeholder="Identifiant" />
                 </Form.Item>
@@ -106,12 +103,6 @@ const SignUp = () => {
                     className="input-inscription"
                     label="Email"
                     name="email"
-                    rules={[
-                      {
-                        required: true,
-                        type: "email",
-                      },
-                    ]}
                 >
                   <Input placeholder="Email address" />
                 </Form.Item>
@@ -120,7 +111,6 @@ const SignUp = () => {
                     className="input-inscription"
                     label="Mot de passe"
                     name="password"
-                    rules={[{ required: true }]}
                 >
                   <Input.Password placeholder="Mot de passe" />
                 </Form.Item>
@@ -136,7 +126,7 @@ const SignUp = () => {
                 </Form.Item>
               </Form>
               <Typography.Paragraph className="form_help_text">
-                {/* Already have an account? <Link to="/signin">Sign In</Link> */}
+                Already have an account? <Link to="/connexion">Sign In</Link>
               </Typography.Paragraph>
             </Card>
           </Col>

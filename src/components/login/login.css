@@ -35,3 +35,10 @@
 .label-connexion{
     font-size: 20px;
 }
+
+.ant-form-item-explain-error{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}

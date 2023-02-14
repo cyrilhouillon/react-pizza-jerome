@@ -121,7 +121,8 @@ return (
                                     {/* {console.log(item.attributes.image.data[0].attributes.url)} */}
                                     {/* {console.log(item.attributes)} */}
                                     <div>
-                                        <img src={url} />
+                                        <img alt="photo de la pizza selectionner" src={url} />
+                                        {console.log(url)}
                                     </div>
                                     <div className='card_container'>
                                         <div className='div_header'>

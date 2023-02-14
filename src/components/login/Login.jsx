@@ -37,6 +37,7 @@ import "../login/login.css";
 // }
 
 const Login = () => {
+  const [form] = Form.useForm();
   // const { isDesktopView } = useScreenSize();
   const navigate = useNavigate();
 
@@ -94,15 +95,13 @@ const Login = () => {
           document.location.href="/reservation";  
         }
          else if(dataRole.data.role.name == "Authenticated"){
-          /////////////////////////////////////////////// TOUTES LES CONDITIONS DE REDIRECTION A SET UP ////////////////////////////////
           document.location.href="/pizzas";  
         } else {
           console.log(dataRole)
         }
-
       }
     } catch (error) {
-      console.error(error);
+      console.log(error)
       setError(error?.message ?? "Something went wrong!");
     } finally {
       setIsLoading(false);
@@ -112,18 +111,19 @@ const Login = () => {
   return (
       <Fragment>
         <Card title="Connexion">
-          {error ? (
-              <Alert
-                  className="alert_error"
-                  message={error}
-                  type="error"
-                  afterClose={() => setError("")}
-              />
-          ) : null}
+          <Alert
+            className="alert_error"
+            message={error}
+            type="error"
+            afterClose={() => setError("")}
+            style={{ display: "block", justifyContent: "center", alignItems: "center" }}
+          /> 
           <Form
-          className="form-connexion"
+             layout="inline"  
+              form={form}
+              className="form-connexion"
               name="basic"
-              layout="vertical"
+              // layout="vertical"
               onFinish={onFinish}
               autoComplete="off"
           >
@@ -131,12 +131,6 @@ const Login = () => {
                 label="Email"
                 name="email"
                 className="input-connexion"
-                rules={[
-                  {
-                    required: true,
-                    type: "email",
-                  },
-                ]}
             >
               <Input placeholder="Email address" />
             </Form.Item>
@@ -145,7 +139,6 @@ const Login = () => {
                 label="Password"
                 name="password"
                 className="input-password"
-                rules={[{ required: true }]}
             >
               <Input.Password placeholder="Password" />
             </Form.Item>
@@ -164,7 +157,7 @@ const Login = () => {
             Pas de compte ? <Link to="/inscription">inscription</Link>
           </Typography.Paragraph>
           <Typography.Paragraph className="form_help_text">
-            <Link to="/">Mot de passe oublié ? </Link>
+            {/* <Link to="/">Mot de passe oublié ? </Link> */}
           </Typography.Paragraph>
         </Card>
       </Fragment>
